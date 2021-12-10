@@ -5,14 +5,23 @@
  */
 
 import { matches } from "validator";
+import XRegExp from "xregexp";
 import { Enum } from "../../types/types";
 import { CommonValidationErrorType } from "./constant/errorType";
 
 export const ValidateRegexErrorType = Enum(CommonValidationErrorType.invalidFormat);
 export type ValidateRegexErrorType = Enum<typeof ValidateRegexErrorType>;
 
-export const validateRegex = (value: string, regex: string) => {
-  if (!matches(value, regex)) {
+export interface ValidateRegexOptions {
+  allowUnicode?: boolean
+}
+
+export const validateRegex = (value: string, regex: string, { allowUnicode = false }: ValidateRegexOptions = {}) => {
+  if (allowUnicode && !XRegExp(regex).test(value)) {
+    return ValidateRegexErrorType.invalidFormat;
+  }
+
+  if (!allowUnicode && !matches(value, regex)) {
     return ValidateRegexErrorType.invalidFormat;
   }
 
