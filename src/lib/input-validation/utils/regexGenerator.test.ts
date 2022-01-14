@@ -168,6 +168,7 @@ describe("validateRegex returns correct output", () => {
     expect(mockValidateRegex).toHaveReturnedWith(ValidateRegexErrorType.invalidFormat);
   });
 
+  // tslint:disable-next-line:max-line-length
   it("returns invalidFormat error string when given password with special characters exceed max repeating count", () => {
     mockValidateRegex("Password@@@123", passwordRegex);
     expect(mockValidateRegex).toHaveBeenCalledTimes(1);

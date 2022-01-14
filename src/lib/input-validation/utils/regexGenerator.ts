@@ -120,8 +120,12 @@ export const generatePattern = ({
   isCustomRegex,
   specialCharacters,
 }: RegexGeneratorParam): string => {
-  if (isCustomRegex) return regex;
-  if (allowUnicode) return UNICODE_PATTERN;
+  if (isCustomRegex) {
+    return regex;
+  }
+  if (allowUnicode) {
+    return UNICODE_PATTERN;
+  }
 
   let allowedCharacterList: string[] = [];
   let allowedCharacterString: string = "";
@@ -192,53 +196,71 @@ export const generatePattern = ({
   }
 
   let capturingGroupNum = 1;
-  if (maxRepeatingAlphaNum > 0) {
-    result += `(?!.*([A-Za-z0-9])\\${capturingGroupNum.toString()}{${maxRepeatingAlphaNum.toString()},})`;
-    capturingGroupNum++;
-  }
+  if (allowedCharacterString !== "") {
+    if (maxRepeatingAlphaNum > 0) {
+      result += `(?!.*([A-Za-z0-9])\\${capturingGroupNum.toString()}{${maxRepeatingAlphaNum.toString()},})`;
+      capturingGroupNum++;
+    }
 
-  if (allowSpace) {
-    if (!allowedSpecialChars) {
-      allowedSpecialChars = `${createCharacterSet(" ")}?`;
-    } else {
-      allowedSpecialChars = createCharacterSet(" ") + "?" + "|" + allowedSpecialChars;
+    if (allowSpace) {
+      // tslint:disable-next-line:prefer-conditional-expression
+      if (!allowedSpecialChars) {
+        allowedSpecialChars = `${createCharacterSet(" ")}?`;
+      } else {
+        allowedSpecialChars = createCharacterSet(" ") + "?" + "|" + allowedSpecialChars;
+      }
     }
   }
 
   let allowedChars = allowedCharacterString;
   if (!!allowedSpecialChars) {
-    allowedChars += `${createCapturingGroup(allowedSpecialChars)}?`;
-    allowedChars += `${allowedCharacterString}+|${allowedCharacterString}`;
+    if (allowedCharacterString !== "") {
+      allowedChars += `${createCapturingGroup(allowedSpecialChars)}?`;
+      allowedChars += `${allowedCharacterString}+|${allowedCharacterString}`;
+    } else {
+      allowedChars += allowedSpecialChars
+    }
   }
 
-  if (maxRepeatingSpecialCharacter > 0) {
+  if (maxRepeatingSpecialCharacter > 0 && specialCharacters.length > 0) {
     const specials = specialCharacters.join("");
     result += `(?!.*([${specials}])\\${capturingGroupNum.toString()}{${maxRepeatingSpecialCharacter.toString()},})`;
   }
 
   result += createCapturingGroup(allowedChars);
-  result += "*$";
+  if (allowedCharacterString !== "") {
+    result += "*";
+  }
+  result += "$";
 
   return result;
 };
 
 const createCharacterSet = (input: string): string => {
-  if (!input) return input;
+  if (!input) {
+    return input;
+  }
   return `[${input}]`;
 };
 
 const createPositiveLookahead = (input: string): string => {
-  if (!input) return input;
+  if (!input) {
+    return input;
+  }
   return `(?=.*${createCharacterSet(input)})`;
 };
 
 const createNonCapturingGroup = (input: string): string => {
-  if (!input) return input;
+  if (!input) {
+    return input;
+  }
   return `(?:${input})`;
 };
 
 const createCapturingGroup = (input: string): string => {
-  if (!input) return input;
+  if (!input) {
+    return input;
+  }
   return `(${input})`;
 };
 
@@ -247,8 +269,12 @@ const createCombination = (pool: string[], length: number) => {
   let combinationLength = length;
   const poolLength = pool.length;
 
-  if (combinationLength > poolLength) return result;
-  if (length === 0) combinationLength = 1;
+  if (combinationLength > poolLength) {
+    return result;
+  }
+  if (length === 0) {
+    combinationLength = 1;
+  }
 
   const indices = Array(combinationLength).fill(0);
 
