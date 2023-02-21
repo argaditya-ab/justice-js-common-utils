@@ -27,7 +27,8 @@
     "doc:json": "npx typedoc src/ --exclude **/*.test.ts --target ES6 --mode file --json build/docs/typedoc.json",
     "reset": "git clean -dfx && git reset --hard && yarn install",
     "clean": "trash build test",
-    "precommit": "run-s test && node scripts/preCommit"
+    "precommit": "run-s test && node scripts/preCommit",
+    "prepare": "npm run build"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",
